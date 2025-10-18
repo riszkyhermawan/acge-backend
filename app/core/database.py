@@ -2,8 +2,11 @@ from app.core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
+from urllib.parse import quote
 
-DATABASE_URL = f"postgresql+asyncpg://{settings.USER}:{settings.PASSWORD}@{settings.HOST}:{settings.PORT}/{settings.DBNAME}" # type: ignore
+encoded_password = quote(settings.PASSWORD) # type: ignore
+
+DATABASE_URL = f"postgresql+asyncpg://{settings.USER}:{encoded_password}@{settings.HOST}:{settings.PORT}/{settings.DBNAME}" # type: ignore
 
 
 engine = create_async_engine(DATABASE_URL)  # type: ignore
