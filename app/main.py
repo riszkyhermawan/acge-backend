@@ -4,8 +4,21 @@ from app.user import router as user_router
 from app.auth import router as auth_router
 from app.core.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import settings
 
 app = FastAPI(title="ACGE Backend")
+origins = settings.CLIENT_ORIGINS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
 app.include_router(user_router.router, prefix="/users", tags=["users"])
 app.include_router(auth_router.router, prefix="/auth", tags=["auth"])
 
