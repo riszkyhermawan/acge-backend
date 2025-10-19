@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import List, Optional
 from dotenv import load_dotenv
 
 
@@ -9,6 +9,9 @@ class Settings:
     SECRET_KEY: Optional[str] = os.getenv("SECRET_KEY") 
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    CLIENT_ORIGINS: List[str] = [
+        origin.strip() for origin in os.getenv("CLIENT_ORIGINS", "").split(",") if origin.strip()
+    ]
     
 
 class DevelopmentSettings(Settings):
