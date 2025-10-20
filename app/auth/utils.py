@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
-from app.user import crud
+from app.user import crud, models
 
 
 from app.user.crud import get_user_by_username
@@ -54,3 +54,8 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+
+
+async def get_user_role (current_user: models.User = Depends(get_current_user)):
+    return current_user.role
