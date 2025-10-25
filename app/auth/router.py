@@ -47,3 +47,8 @@ async def register(user: auth_schemas.registerUser, db: AsyncSession = Depends(d
 @router.get("/me", response_model=user_schemas.User) # type: ignore
 async def read_users_me(current_user: models.User = Depends(utils.get_current_user)):
     return current_user
+
+
+@router.get("/role")
+async def read_user_role(role: str = Depends(utils.get_user_role)):
+    return {"role": role}
