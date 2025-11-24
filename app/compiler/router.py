@@ -12,10 +12,13 @@ async def compile_code(request: CodeRequest, user_role: str = Depends(get_user_r
     code = request.source_code
     input_data = request.input_data 
     
+
     payload = {
         "source_code": code,
         "input_data": input_data
     }
+    
+    
 
     if user_role != "student":
         raise HTTPException(status_code=403, detail="Only students can compile code.")
