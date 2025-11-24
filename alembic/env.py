@@ -20,6 +20,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 from app.user import models as user_models
+from app.questions import models as question_models
 
 
 # for 'autogenerate' support
