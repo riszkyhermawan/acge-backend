@@ -12,6 +12,7 @@ class Question(Base):
     description = Column(String, nullable=False)
     attachment_url = Column(String, nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    test_cases = relationship("TestCases", back_populates="question", cascade="all, delete-orphan")
     
 class TestCases(Base):
     __tablename__ = "test_cases"
@@ -20,3 +21,4 @@ class TestCases(Base):
     question_id = Column(Integer, ForeignKey("questions.id"), nullable=False)
     input_data = Column(JSONB, nullable=False)
     expected_output = Column(JSONB, nullable=False)
+    question = relationship("Question", back_populates="test_cases")
