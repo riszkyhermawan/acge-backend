@@ -11,6 +11,7 @@ import logging
 import json
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
+from app.questions import router as question_router
 
 app = FastAPI(title="ACGE Backend")
 origins = settings.CLIENT_ORIGINS
@@ -98,6 +99,7 @@ app.add_middleware(
 app.include_router(user_router.router, prefix="/users", tags=["users"])
 app.include_router(auth_router.router, prefix="/auth", tags=["auth"])
 app.include_router(compiler_router.router, prefix="/compiler", tags=["compiler"])
+app.include_router(question_router.router, prefix="/questions", tags=["questions"])
 
 
 @app.get("/")
