@@ -12,7 +12,7 @@ class Question(Base):
     description = Column(String, nullable=False)
     attachment_url = Column(String, nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
-    test_cases = relationship("TestCases", back_populates="question", cascade="all, delete-orphan")
+    test_cases = relationship("TestCases", back_populates="question", cascade="all, delete-orphan", lazy="selectin")
     
 class TestCases(Base):
     __tablename__ = "test_cases"

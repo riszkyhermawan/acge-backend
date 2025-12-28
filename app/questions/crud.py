@@ -5,17 +5,14 @@ from app.auth.utils import get_user_role
 from app.questions.schemas import QuestionBase, TestCaseBase
 
 
-async def create_question(db: AsyncSession, question_data: QuestionBase, test_cases: list[TestCaseBase], user_id: int):
+async def create_question(db: AsyncSession, question_data: QuestionBase, user_id: int):
     new_question = Question(
         title = question_data.title,
         description = question_data.description,
         attachment_url = question_data.attachment_url,
         created_by = user_id,
-        test_cases = [TestCases(
-            input_data = case.input_data,
-            expected_output = case.expected_output,
-        ) for case in test_cases]
     )
+    
     db.add(new_question)
     await db.commit()
     await db.refresh(new_question)
@@ -74,4 +71,15 @@ async def update_test_cases(db: AsyncSession, question_id: int, test_cases: list
     ]
     db.add_all(new_test_cases)
     await db.commit()
-    return new_test_cases
+    
+    for tc in new_test_cases:
+        await db.refresh(tc)
+    return [
+        {
+            "id": tc.id,
+            "question_id": tc.question_id,
+            "input_data": tc.input_data,
+            "expected_output": tc.expected_output,
+        }
+        for tc in new_test_cases
+    ]
