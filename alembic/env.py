@@ -8,10 +8,15 @@ from alembic import context
 from app.core.config import settings
 from app.core.database import Base
 from urllib.parse import quote
+import os
+import sys
+sys.path.insert(0, os.getcwd())
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -21,6 +26,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 from app.user import models as user_models
 from app.questions import models as question_models
+from app.submission import models as submission_models
 
 
 # for 'autogenerate' support

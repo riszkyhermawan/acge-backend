@@ -23,7 +23,8 @@ async def compile_code(request: CodeRequest, user_role: str = Depends(get_user_r
     if user_role != "student":
         raise HTTPException(status_code=403, detail="Only students can compile code.")
     else:
-        async with httpx.AsyncClient() as client:
+        timeoutSetting = httpx.Timeout(30.0)
+        async with httpx.AsyncClient(timeout=timeoutSetting) as client:
             try:
                 response = await client.post(settings.COMPILER_API_URL, json=payload) # type: ignore
                 response.raise_for_status()
