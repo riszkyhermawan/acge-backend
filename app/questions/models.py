@@ -13,6 +13,7 @@ class Question(Base):
     attachment_url = Column(String, nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     test_cases = relationship("TestCases", back_populates="question", cascade="all, delete-orphan", lazy="selectin")
+    submissions = relationship("Submission", back_populates="question", cascade="all, delete-orphan")
     
 class TestCases(Base):
     __tablename__ = "test_cases"

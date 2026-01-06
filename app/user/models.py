@@ -1,4 +1,5 @@
 from sqlalchemy import Integer, String, Boolean, Column
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
@@ -11,5 +12,7 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(50), nullable=False, default="student")
     is_active = Column(Boolean, default=True)
+    
+    submissions = relationship("Submission", back_populates="user", cascade="all, delete-orphan")
 
 
