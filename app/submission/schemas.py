@@ -4,6 +4,8 @@ from datetime import datetime
 class SubmissionCreate(BaseModel):
     code: str
     question_id: int
+    status: str | None = "Not Submitted"
+    detailed_results: list | dict | None = None
 
 class SubmissionResponse(SubmissionCreate):
     id: int

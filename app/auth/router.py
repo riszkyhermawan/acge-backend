@@ -1,5 +1,5 @@
 
-from sqlite3 import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core import database
