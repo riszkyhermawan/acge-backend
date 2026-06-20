@@ -32,3 +32,25 @@ async def get_latest_submission(
     if not latest_submission:
         raise HTTPException(status_code=404, detail="No submissions found for this question.")
     return latest_submission
+
+
+@router.get("/by_question/{question_id}", response_model=list[SubmissionResponse])  # type: ignore
+async def get_submissions_by_question(
+    question_id: int,
+    db: AsyncSession = Depends(database.get_db), # type: ignore
+):
+    submissions = await crud.get_submission_by_question_id(db, question_id) # type: ignore
+    if not submissions:
+        raise HTTPException(status_code=404, detail="No submissions found for this question.")
+    return submissions
+
+
+@router.get("/{submission_id}", response_model=SubmissionResponse)  # type: ignore
+async def get_submission_by_id(
+    submission_id: int,
+    db: AsyncSession = Depends(database.get_db), # type: ignore
+):
+    submission = await crud.get_submission_by_id(db, submission_id) # type: ignore
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found.")
+    return submission
