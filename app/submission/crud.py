@@ -4,6 +4,7 @@ from sqlalchemy.orm import joinedload
 from app.submission.models import Submission
 from app.submission.schemas import SubmissionCreate
 from datetime import datetime, timezone
+from collections import defaultdict
 
 
 async def create_submission(db: AsyncSession, submission_data: SubmissionCreate, user_id: int):
@@ -74,11 +75,27 @@ async def get_submission_by_question_id(db: AsyncSession, question_id: int):
     result = await db.execute(query)
     submissions = result.scalars().all()
     
+    submissions_by_user = defaultdict(list)
+    for submission in submissions:
+        submissions_by_user[submission.user_id].append(submission)
+    
+    submission_per_user = []
+    for user_id, user_submissions in submissions_by_user.items():
+        passed = [s for s in user_submissions if s.status == "Passed"]
+        if passed:
+            best_passed = max(passed, key=lambda s: s.created_at)
+        else:
+            best_passed = user_submissions[0]
+            
+        submission_per_user.append(best_passed)
+    
+    
+    
     return [
         {
             **submission.__dict__,
             "username": submission.user.username if submission.user else None,  # type: ignore
             "full_name": submission.user.full_name if submission.user else None,  # type: ignore
         }
-        for submission in submissions
+        for submission in sorted(submission_per_user, key=lambda s: s.created_at if s else datetime.min, reverse=True)
     ]
