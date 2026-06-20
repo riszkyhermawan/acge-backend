@@ -5,6 +5,7 @@ from app.submission.models import Submission
 from app.submission.schemas import SubmissionCreate
 from datetime import datetime, timezone
 from collections import defaultdict
+from app.questions.models import TestCases 
 
 
 async def create_submission(db: AsyncSession, submission_data: SubmissionCreate, user_id: int):
@@ -89,8 +90,6 @@ async def get_submission_by_question_id(db: AsyncSession, question_id: int):
             
         submission_per_user.append(best_passed)
     
-    
-    
     return [
         {
             **submission.__dict__,
@@ -99,3 +98,46 @@ async def get_submission_by_question_id(db: AsyncSession, question_id: int):
         }
         for submission in sorted(submission_per_user, key=lambda s: s.created_at if s else datetime.min, reverse=True)
     ]
+    
+    
+async def get_submission_by_id(db: AsyncSession, submission_id: int):
+    query = (
+        select(Submission)
+        .where(Submission.id == submission_id)
+        .options(
+            joinedload(Submission.user),
+            joinedload(Submission.question)
+        )
+    )
+    
+    result = await db.execute(query)
+    submission = result.scalars().first()
+    
+    if not submission:
+        return None
+    
+    # Fetch test cases separately
+    test_cases_query = select(TestCases).where(TestCases.question_id == submission.question_id) # type: ignore
+    test_cases_result = await db.execute(test_cases_query)
+    test_cases = test_cases_result.scalars().all()
+    
+    return {
+        "id": submission.id,
+        "code": submission.code,
+        "question_id": submission.question_id,
+        "user_id": submission.user_id,
+        "status": submission.status,
+        "created_at": submission.created_at,
+        "detailed_results": submission.detailed_results,
+        "username": submission.user.username if submission.user else None,
+        "full_name": submission.user.full_name if submission.user else None,
+        "question_title": submission.question.title if submission.question else None,
+        "test_cases": [
+            {
+                "id": tc.id,
+                "input_data": tc.input_data, # type: ignore
+                "expected_output": tc.expected_output, # type: ignore
+            }
+            for tc in test_cases
+        ],
+    }
