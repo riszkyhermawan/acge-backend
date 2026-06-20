@@ -60,3 +60,15 @@ async def get_latest_submission(db: AsyncSession, user_id: int, question_id: int
     result = await db.execute(query)
     latest_submission = result.scalars().first()
     return latest_submission
+
+
+async def get_submission_by_question_id(db: AsyncSession, question_id: int):
+    query = (
+        select(Submission)
+        .where(Submission.question_id == question_id)
+        .order_by(desc(Submission.created_at))
+    )
+    
+    result = await db.execute(query)
+    submissions = result.scalars().all()
+    return submissions
