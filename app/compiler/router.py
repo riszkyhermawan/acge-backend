@@ -20,8 +20,8 @@ async def compile_code(request: CodeRequest, user_role: str = Depends(get_user_r
     
     
 
-    if user_role != "student":
-        raise HTTPException(status_code=403, detail="Only students can compile code.")
+    if user_role != "student" and user_role != "teacher":
+        raise HTTPException(status_code=403, detail="Only students and teachers can compile code.")
     else:
         timeoutSetting = httpx.Timeout(30.0)
         async with httpx.AsyncClient(timeout=timeoutSetting) as client:
