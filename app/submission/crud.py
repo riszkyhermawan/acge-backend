@@ -1,5 +1,6 @@
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 from app.submission.models import Submission
 from app.submission.schemas import SubmissionCreate
 from datetime import datetime, timezone
@@ -66,9 +67,18 @@ async def get_submission_by_question_id(db: AsyncSession, question_id: int):
     query = (
         select(Submission)
         .where(Submission.question_id == question_id)
+        .options(joinedload(Submission.user))  # Eager load the related User
         .order_by(desc(Submission.created_at))
     )
     
     result = await db.execute(query)
     submissions = result.scalars().all()
-    return submissions
+    
+    return [
+        {
+            **submission.__dict__,
+            "username": submission.user.username if submission.user else None,  # type: ignore
+            "full_name": submission.user.full_name if submission.user else None,  # type: ignore
+        }
+        for submission in submissions
+    ]

@@ -12,6 +12,8 @@ class SubmissionResponse(SubmissionCreate):
     user_id: int
     created_at: datetime
     status: str | None = None
+    username: str | None = None
+    full_name: str | None = None
     detailed_results: dict | None = None
 
     class Config:
